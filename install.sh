@@ -99,37 +99,48 @@ EOF
     echo ""
 else
     echo "⚙️  Configuring Claude hooks..."
-    
+
     # Create or update settings.json with relative paths
     RELATIVE_INSTALL_DIR=$(echo "$INSTALL_DIR" | sed "s|$HOME|~|")
-    cat > "$CLAUDE_SETTINGS" << EOF
+
+    # Create hooks object
+    HOOKS_JSON=$(cat << EOF
 {
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$RELATIVE_INSTALL_DIR/notify-handler.sh"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$RELATIVE_INSTALL_DIR/notify-completion.sh"
-          }
-        ]
-      }
-    ]
-  }
+  "Notification": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "$RELATIVE_INSTALL_DIR/notify-handler.sh"
+        }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "$RELATIVE_INSTALL_DIR/notify-completion.sh"
+        }
+      ]
+    }
+  ]
 }
 EOF
+)
+
+    # Merge with existing settings or create new file
+    if [[ -f "$CLAUDE_SETTINGS" ]]; then
+        # Merge hooks into existing settings
+        jq --argjson hooks "$HOOKS_JSON" '.hooks = $hooks' "$CLAUDE_SETTINGS" > "$CLAUDE_SETTINGS.tmp" && mv "$CLAUDE_SETTINGS.tmp" "$CLAUDE_SETTINGS"
+    else
+        # Create new settings file with just hooks
+        echo "{}" | jq --argjson hooks "$HOOKS_JSON" '.hooks = $hooks' > "$CLAUDE_SETTINGS"
+    fi
+
     echo "✅ Claude hooks configured"
 fi
 

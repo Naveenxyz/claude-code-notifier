@@ -22,6 +22,7 @@
 - 👀 **Focus-Smart**: Only notifies when you've switched away from your work
 - 🎨 **Beautiful UI**: Professional notifications with titles, subtitles, and sounds
 - ⚡ **Multi-App Support**: Works with 10+ popular development applications
+- 🖥️ **Tmux Support**: Full detection support for terminal multiplexer sessions
 - 🔧 **Easy Setup**: One-command installation with automatic configuration
 
 ## 🚀 Quick Setup
@@ -131,18 +132,20 @@ If you prefer manual setup, add this to your `~/.claude/settings.json`:
 
 ### How It Works
 
-1. **Process Detection**: Walks up the process tree to identify the originating application
-2. **Focus Monitoring**: Uses AppleScript to detect the currently focused app
-3. **Smart Logic**: Only sends notifications when you've switched away from your work
-4. **Enhanced Delivery**: Uses `terminal-notifier` for professional notifications
-5. **Click Handling**: Bundle IDs enable click-to-focus functionality
+1. **Tmux Detection**: First checks if running inside tmux and detects the terminal emulator
+2. **Process Detection**: Walks up the process tree to identify the originating application
+3. **Focus Monitoring**: Uses AppleScript to detect the currently focused app
+4. **Smart Logic**: Only sends notifications when you've switched away from your work
+5. **Enhanced Delivery**: Uses `terminal-notifier` for professional notifications
+6. **Click Handling**: Bundle IDs enable click-to-focus functionality
 
 ## 📱 Supported Applications
 
 | Category | Applications |
 |----------|-------------|
 | **IDEs** | IntelliJ IDEA, Cursor, VS Code, WebStorm, PHPStorm, PyCharm, Sublime Text |
-| **Terminals** | Terminal, iTerm2, Ghostty, Alacritty |
+| **Terminals** | Terminal, iTerm2, Ghostty, Alacritty, Warp |
+| **Terminal Multiplexers** | Tmux (with full terminal detection support) |
 | **Others** | Any application (basic support) |
 
 ## 🔍 Debugging

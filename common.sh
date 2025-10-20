@@ -38,11 +38,24 @@ log_message() {
 
 # Function to detect the originating application by walking up process tree
 detect_originating_app() {
+    # Check if running inside tmux
+    if [[ -n "$TMUX" ]] && command -v tmux &> /dev/null; then
+        local client_term=$(tmux display-message -p '#{client_termname}' 2>/dev/null)
+        case "$client_term" in
+            *"ghostty"*) echo "ghostty"; return ;;
+            *"alacritty"*) echo "alacritty"; return ;;
+            *"warp"*) echo "warp"; return ;;
+            *"iterm"*|*"iTerm"*) echo "iterm"; return ;;
+            *"terminal"*|*"Terminal"*|*"xterm"*) echo "terminal"; return ;;
+            *"sublime"*) echo "sublime"; return ;;
+        esac
+    fi
+
     local current_pid=$$
-    
+
     while [[ $current_pid -gt 1 ]]; do
         local process_name=$(ps -o comm= -p "$current_pid" 2>/dev/null)
-        
+
         case "$process_name" in
             *"idea"*|*"IntelliJ"*) echo "idea"; return ;;
             *"Cursor"*) echo "cursor"; return ;;
@@ -55,12 +68,13 @@ detect_originating_app() {
             *"iTerm"*) echo "iterm"; return ;;
             *"Ghostty"*) echo "ghostty"; return ;;
             *"Alacritty"*) echo "alacritty"; return ;;
+            *"Warp"*) echo "warp"; return ;;
         esac
-        
+
         current_pid=$(ps -o ppid= -p "$current_pid" 2>/dev/null | xargs)
         [[ -z "$current_pid" ]] && break
     done
-    
+
     echo "unknown"
 }
 
@@ -80,6 +94,7 @@ get_bundle_id() {
         "iterm") echo "com.googlecode.iterm2" ;;
         "ghostty") echo "com.mitchellh.ghostty" ;;
         "alacritty") echo "org.alacritty" ;;
+        "warp") echo "dev.warp.Warp-Stable" ;;
         *) echo "" ;;
     esac
 }
@@ -94,6 +109,7 @@ get_focused_app() {
         "iTerm") echo "iterm" ;;
         "Ghostty") echo "ghostty" ;;
         "Cursor") echo "cursor" ;;
+        "Warp") echo "warp" ;;
         *) echo "$focused_app_full" | tr '[:upper:]' '[:lower:]' ;;
     esac
 }
